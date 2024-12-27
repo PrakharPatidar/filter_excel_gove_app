@@ -29,7 +29,7 @@ def load_excel_file(file_path):
 # Set page configuration for responsive design
 st.set_page_config(page_title="Get Account Details", layout="wide")
 
-st.title("Get Account Details")
+st.title("Account Details")
 
 # Sidebar for optional file upload
 with st.sidebar:
@@ -58,11 +58,11 @@ if os.path.exists(file_path):
         df['SERIAL_NBR'] = df['SERIAL_NBR'].astype(str).str.strip()
 
         # Input Fields for Filtering
-        acct_id = st.text_input("Enter value for ACCT_ID (if applicable):").strip()
-        serial_nbr = st.text_input("Enter value for SERIAL_NBR (if applicable):").strip()
+        acct_id = st.text_input("Enter value for Account ID:").strip()
+        serial_nbr = st.text_input("Enter value for SERIAL Number:").strip()
 
         # Ensure at least one input is provided
-        if st.button("Filter Rows"):
+        if st.button("Submit"):
             if acct_id or serial_nbr:
                 filtered_df = df
                 if acct_id:
@@ -71,7 +71,7 @@ if os.path.exists(file_path):
                     filtered_df = filtered_df[filtered_df['SERIAL_NBR'] == serial_nbr]
 
                 if not filtered_df.empty:
-                    st.write("Filtered Row:")
+                    st.write("Account Detail:")
                     st.dataframe(filtered_df.T, width=1500, height=500)  # Display as vertical table with auto-sizing
                 else:
                     st.warning("No matching rows found.")
