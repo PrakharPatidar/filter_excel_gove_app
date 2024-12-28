@@ -57,24 +57,28 @@ if os.path.exists(file_path):
         df['ACCT_ID'] = df['ACCT_ID'].astype(str).str.strip()
         df['SERIAL_NBR'] = df['SERIAL_NBR'].astype(str).str.strip()
 
+        df_acc = df.set_index(['ACCT_ID'])
+        df_snbr = df.set_index(['SERIAL_NBR'])
+        # df.set_index(['ACCT_ID', 'SERIAL_NBR'], inplace=True)
+        
         # Input Fields for Filtering
         acct_id = st.text_input("Enter value for Account ID:").strip()
         serial_nbr = st.text_input("Enter value for SERIAL Number:").strip()
 
         # Ensure at least one input is provided
         if st.button("Submit"):
-            if acct_id or serial_nbr:
-                filtered_df = df
-                if acct_id:
-                    filtered_df = filtered_df[filtered_df['ACCT_ID'] == acct_id]
-                if serial_nbr:
-                    filtered_df = filtered_df[filtered_df['SERIAL_NBR'] == serial_nbr]
-
-                if not filtered_df.empty:
-                    st.write("Account Detail:")
-                    st.dataframe(filtered_df.T, width=1500, height=500)  # Display as vertical table with auto-sizing
-                else:
-                    st.warning("No matching rows found.")
+            st.text(f"Searching for Acc Id:{acct_id}, S. No:{serial_nbr}")
+            if acct_id:
+                try:
+                    filtered_df = df_acc.loc[acct_id]
+                    st.write(f"Account Detail: Acc Id:{acct_id}, S. No:{serial_nbr}")
+                    st.dataframe(filtered_df.reset_index().T, width=1500, height=500)  # Display as vertical table
+                except KeyError as e:
+                    st.warning(f"No matching rows found. Error: {e}")
+            elif serial_nbr:
+                    filtered_df = df_snbr.loc[serial_nbr]
+                    st.write(f"Account Detail: Acc Id:{acct_id}, S. No:{serial_nbr}")
+                    st.dataframe(filtered_df.reset_index().T, width=1500, height=500)  # Display as vertical table
             else:
                 st.error("Please provide at least one value: ACCT_ID or SERIAL_NBR.")
 else:
