@@ -20,7 +20,7 @@ def handle_file_upload(uploaded_file):
 
 # Function to load the Excel file
 @st.cache_resource
-def load_excel_file_once(file_path):
+def load_excel_file(file_path):
     try:
         df = pd.read_excel(file_path)
         df['ACCT_ID'] = df['ACCT_ID'].astype(str).str.strip()
@@ -41,23 +41,23 @@ st.title("Get Meter Details")
 with st.sidebar:
     st.header("Upload a New File (Admin)")
     input_passcode = st.text_input("Enter the password to upload the file:", type="password")
-    if st.button("Verify"):
+    if input_passcode:
         if input_passcode == PASSCODE:
             st.success("Passcode is correct!")
+
             # File Upload
             uploaded_file = st.file_uploader("Upload an Excel file", type=["xlsx"])
             if uploaded_file is not None:
                 file_path = handle_file_upload(uploaded_file)
                 st.cache_resource.clear()
-                df_acc, df_sno = load_excel_file_once(file_path)
                 st.success(f"File uploaded successfully! Replaced existing file at {file_path}.")
         else:
-            st.error("Incorrect password!")
+            st.error("Incorrect passcode!")
 
 # File Processing Section
 file_path = os.path.join(UPLOAD_DIRECTORY, FILE_NAME)
 if os.path.exists(file_path):
-    df_acc, df_sno = load_excel_file_once(file_path)
+    df_acc, df_sno = load_excel_file(file_path)
     if df_acc is not None:        
         # Input Fields for Filtering
         acct_id = st.text_input("Enter value for Account ID:").strip()
@@ -71,7 +71,7 @@ if os.path.exists(file_path):
                 if acct_id:
                     try:
                         filtered_df = df_acc.loc[acct_id]
-                        st.write(f"Account Detail: Acc Id:{acct_id}, S. No:{serial_nbr}")
+                        st.write(f"Account Detail For: Acc Id: {acct_id}, S. No: {serial_nbr}")
                         st.dataframe(filtered_df.T, width=1500, height=500)  # Display as vertical table
                     except KeyError as e:
                         st.warning(f"No matching rows found. Error: {e}")
