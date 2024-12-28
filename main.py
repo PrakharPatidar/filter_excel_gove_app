@@ -49,6 +49,7 @@ with st.sidebar:
             if uploaded_file is not None:
                 file_path = handle_file_upload(uploaded_file)
                 st.cache_resource.clear()
+                df_acc, df_sno = load_excel_file_once(file_path)
                 st.success(f"File uploaded successfully! Replaced existing file at {file_path}.")
         else:
             st.error("Incorrect password!")
